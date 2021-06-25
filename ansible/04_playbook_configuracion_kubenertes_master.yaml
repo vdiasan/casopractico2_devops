@@ -9,15 +9,15 @@
     firewalld:
       permanent: yes
       immediate: yes
-      state: enable
-      port: "{{item.}}"
+      state: enabled
+      port: "{{item}}"
     
     with_items:
-      - '6443'
-      - '2379'
-      - '2380'
-      - '10250-10252'
-      - '10255'
+      - '6443/tcp'
+      - '2379/tcp'
+      - '2380/tcp'
+      - '10250-10252/tcp'
+      - '10255/tcp'
 
   - name: Configuramos Kubeadm
     command: kubeadm config images pull  
@@ -29,8 +29,8 @@
       immediate: yes
       state: enabled
     with_items:
-      - 'rule family=ipv4 source address=192.168.1.108/32'
-      - 'rule family=ipv4 source address=192.168.1.109/32'
+      - 'rule family=ipv4 source address=192.168.1.108/32 accept'
+      - 'rule family=ipv4 source address=192.168.1.109/32 accept'
       #- 'rule family=ipv4 source address=10.0.1.11/32'
       #- 'rule family=ipv4 source address=10.0.1.12/32'
       
@@ -41,22 +41,18 @@
       immediate: yes
       state: enabled
     with_items:
-      - 'rule family=ipv4 source address=172.17.0.0/16'
-      #- 'rule family=ipv4 source address=10.0.1.12/32'
+      - 'rule family=ipv4 source address=172.17.0.0/16 accept'
       #- 'rule family=ipv4 source address=172.17.0.0/16'
 
   - name: Instalamos el plugin CNI de Kubernetes y red PODS
     command: kubeadm init --pod-network-cidr 192.169.0.0/16
-
-  #- name: Exportar Kubeconfig
-  #  command: export KUBECONFIG=/etc/kubernetes/admin.conf
 
   - name: Generate join command
     command: kubeadm token create --print-join-command
     register: join_command
 
   - name: Copy join command to local file
-    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-token"
     become: no  
 
   - name: Autorizar al usuario root acceder al cluster
@@ -64,4 +60,4 @@
     with_items:
      - mkdir -p /root/.kube
      - cp -i /etc/kubernetes/admin.conf /root/.kube/config
-     - chown $(id -u):$(id -g) /root/.kube/config
+     - chown root:root /root/.kube/config
