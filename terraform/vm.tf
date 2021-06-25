@@ -18,7 +18,7 @@ resource "azurerm_linux_virtual_machine" "myVM1" {
         caching              = "ReadWrite"
         storage_account_type = "Standard_LRS"
     }
-
+    
     plan {
         name      = "centos-8-stream-free"
         product   = "centos-8-stream-free"

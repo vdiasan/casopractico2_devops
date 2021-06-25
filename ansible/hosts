@@ -1,0 +1,23 @@
+# Fichero de Inventario en Ansible
+
+# Servidor con rol de master en Kubernetes
+[master]
+master.example.com
+
+# Servidor con rol de nfs en Kubernetes
+[nfs]
+nfs.example.com
+
+# Servidor con rol de worker01 en Kubernetes
+[worker01]
+worker01.example.com
+
+# Servidor con rol de worker02 en Kubernetes
+[worker02]
+worker02.example.com
+
+# Kubernetes Children
+[kubernetes:children]
+master
+worker01
+worker02

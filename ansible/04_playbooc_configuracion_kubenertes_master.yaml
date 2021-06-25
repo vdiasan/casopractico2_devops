@@ -1,0 +1,67 @@
+---
+
+- hosts: master
+  become: yes
+
+  tasks:
+
+  - name: Configuramos firewall para acceder a servicios de Kubernetes
+    firewalld:
+      permanent: yes
+      immediate: yes
+      state: enable
+      port: "{{item.}}"
+    
+    with_items:
+      - '6443'
+      - '2379'
+      - '2380'
+      - '10250-10252'
+      - '10255'
+
+  - name: Configuramos Kubeadm
+    command: kubeadm config images pull  
+      
+  - name: Permitimos acceso desde los workers
+    firewalld:
+      rich_rule: "{{item}}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    with_items:
+      - 'rule family=ipv4 source address=192.168.1.108/32'
+      - 'rule family=ipv4 source address=192.168.1.109/32'
+      #- 'rule family=ipv4 source address=10.0.1.11/32'
+      #- 'rule family=ipv4 source address=10.0.1.12/32'
+      
+  - name: Permitimos acceso de los contenedores a localhost
+    firewalld:
+      rich_rule: "{{item}}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    with_items:
+      - 'rule family=ipv4 source address=172.17.0.0/16'
+      #- 'rule family=ipv4 source address=10.0.1.12/32'
+      #- 'rule family=ipv4 source address=172.17.0.0/16'
+
+  - name: Instalamos el plugin CNI de Kubernetes y red PODS
+    command: kubeadm init --pod-network-cidr 192.169.0.0/16
+
+  #- name: Exportar Kubeconfig
+  #  command: export KUBECONFIG=/etc/kubernetes/admin.conf
+
+  - name: Generate join command
+    command: kubeadm token create --print-join-command
+    register: join_command
+
+  - name: Copy join command to local file
+    local_action: copy content="{{ join_command.stdout_lines[0] }}" dest="./join-command"
+    become: no  
+
+  - name: Autorizar al usuario root acceder al cluster
+    command: "{{ item }}"
+    with_items:
+     - mkdir -p /root/.kube
+     - cp -i /etc/kubernetes/admin.conf /root/.kube/config
+     - chown $(id -u):$(id -g) /root/.kube/config
