@@ -1,0 +1,91 @@
+---  
+# Rol de tareas comunes a aplicar en los servidores máster y workers.
+  
+  - name: Activamos Firewall.
+    systemd:
+      name: firewalld 
+      state: started
+      enabled: yes
+  
+  - name: Añadimos modprobe br_netfilter
+    modprobe:
+      name: br_netfilter
+      state: present  
+  
+  - name: Activamos Transparent Masquerading.
+    firewalld: 
+      masquerade: yes
+      state: enabled
+      #permanent: yes
+      #inmediate: yes
+      
+  - name: Configurar para que Kubernetes maneje tráfico con firewall.
+    become: yes
+    sysctl:
+      name: net.bridge.bridge-nf-call-iptables
+      value: 1
+      sysctl_set: yes
+      state: present
+      reload: yes
+
+  - name: Desactivar swap
+    shell: swapoff -a 
+
+  - name: Comentar línea de fichero /etc/fstab
+    replace:
+     path: /etc/fstab
+     regexp: '(^/.*swap*)'
+     replace: '# \1'
+
+
+  - name: Eliminar repositorio 
+    yum_repository: 
+      name: donwload.docker.com_linux_centos_docker-ce-repo
+      state: absent  
+  
+  
+  - name: Instalación del servicio Docker. 
+    command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+  - name: Instalación de Docker-ce
+    dnf:
+      name: 
+        - containerd.io
+        - docker-ce
+        - docker-ce-cli
+    
+      state: latest
+
+  - name: Activamos servicio Docker.
+    systemd:
+      name: docker 
+      state: started
+      enabled: yes
+
+  - name: Creamos un archivo repositorio para Kubernetes.
+    file:
+     path: /etc/yum.repos.d/kubernetes.repo
+     state: touch
+    
+  - name: Configuramos el repositorio de Kubernetes.
+    blockinfile:
+     path: /etc/yum.repos.d/kubernetes.repo
+     block: |
+      [Kubernetes]
+      name=Kubernetes
+      baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+      enabled=1
+      gpgcheck=1
+      repo_gpgcheck=1
+      gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+
+  - name: Instalación de Kubernetes. 
+    shell: |
+     yum install kubelet kubeadm kubectl -y
+
+  - name: Activamos servicio Kubernetes.
+    systemd:
+      name: kubelet 
+      state: started
+      enabled: yes

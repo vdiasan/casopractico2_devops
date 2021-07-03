@@ -1,0 +1,8 @@
+---
+
+# Playbook configuración Kubernetes en servidores workers. 
+
+- hosts: workers:children
+  become: yes
+  roles:
+    - 06_rol_kubernetes_workers

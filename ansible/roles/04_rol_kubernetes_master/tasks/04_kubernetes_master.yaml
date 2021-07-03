@@ -1,0 +1,60 @@
+---  
+
+# Rol de instalación de Kubernetes en master. Aplica solo a master.
+  
+  - name: Configuramos firewall para acceder a servicios de Kubernetes
+    firewalld:
+      permanent: yes
+      immediate: yes
+      state: enabled
+      port: "{{item}}"
+    
+    with_items:
+      - '6443/tcp'
+      - '2379/tcp'
+      - '2380/tcp'
+      - '10250-10252/tcp'
+      - '10255/tcp'
+
+  - name: Configuramos Kubeadm
+    command: kubeadm config images pull  
+      
+  - name: Permitimos acceso desde los workers
+    firewalld:
+      rich_rule: "{{item}}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    with_items:
+      - 'rule family=ipv4 source address=192.168.1.108/32 accept'
+      - 'rule family=ipv4 source address=192.168.1.109/32 accept'
+      #- 'rule family=ipv4 source address=10.0.1.11/32'
+      #- 'rule family=ipv4 source address=10.0.1.12/32'
+      
+  - name: Permitimos acceso de los contenedores a localhost
+    firewalld:
+      rich_rule: "{{item}}"
+      permanent: yes
+      immediate: yes
+      state: enabled
+    with_items:
+      - 'rule family=ipv4 source address=172.17.0.0/16 accept'
+      #- 'rule family=ipv4 source address=172.17.0.0/16'
+
+  - name: Instalamos el plugin CNI de Kubernetes y red PODS
+    command: kubeadm init --pod-network-cidr 192.169.0.0/16
+
+  - name: Generamos el token
+    command: kubeadm token create --print-join-command
+    register: join_token
+
+  - name: Copiamos el archivo join-token a archivo local
+    local_action: copy content="{{ join_token.stdout_lines[0] }}" dest="./join-token"
+    become: no  
+
+  - name: Autorizar al usuario root acceder al cluster
+    command: "{{ item }}"
+    with_items:
+     - mkdir -p /root/.kube
+     - cp -i /etc/kubernetes/admin.conf /root/.kube/config
+     - chown root:root /root/.kube/config

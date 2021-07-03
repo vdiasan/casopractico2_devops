@@ -1,0 +1,7 @@
+---
+# Playbook para la instalacón del servicio Ingress Controller en el servidor máster. 
+
+- hosts: master
+  become: yes
+  roles:
+    - 07_rol_ingress_controller_master

@@ -1,0 +1,12 @@
+---
+
+# Playbook para creación de usuario no root en servidor máster. 
+
+- hosts: master
+  become: yes
+  roles:
+    - 08_rol_usuario_noroot_master 
+
+ 
+
+   

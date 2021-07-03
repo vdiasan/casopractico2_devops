@@ -1,0 +1,25 @@
+---
+
+# Rol de instalación de usuario no root. Aplica a servidor master. 
+
+  - name: Creacion Usuario Admin
+    user: 
+      name: kubeadmin
+      comment: Usuario Administrador Kubernetes
+      shell: /bin/bash 
+      create_home: true
+      append: yes
+
+  - name: Kubeconfig para Kubeadmin 
+    command: "{{ item }}" 
+    
+    with_items:  
+      - mkdir -p /home/kubeadmin/.kube
+      - cp -i /etc/kubernetes/admin.conf /home/kubeadmin/.kube/config
+      - chown -R kubeadmin. /home/kubeadmin
+
+  - name: Copiar usuario a archivo sudoers
+    copy: 
+      content: 'kubeadmin ALL=(ALL:ALL) NOPASSWD:ALL' 
+      dest: /etc/sudoers.d/kubeadmin
+      mode: 0440

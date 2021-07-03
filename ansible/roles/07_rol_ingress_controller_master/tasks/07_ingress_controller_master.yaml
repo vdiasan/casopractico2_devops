@@ -1,0 +1,14 @@
+---  
+
+# Rol de instalación del servicio Ingress Controller. Aplica a servidor master. 
+  
+  - name: Descargar Ingress Controller
+    copy: 
+      src: ./archivos_extra/haproxy-ingress.yaml
+      dest: /tmp/
+      owner: ansible
+      group: ansible
+      mode: '0644'
+  
+  - name: Instalacion de Ingress Controller
+    command: kubectl apply -f /tmp/haproxy-ingress.yaml 

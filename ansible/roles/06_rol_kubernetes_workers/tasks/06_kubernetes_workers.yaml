@@ -1,0 +1,20 @@
+---  
+
+# Rol de instalación de kubernetes en servidores workers. Aplica a servidores worker01 y worker02.
+
+  - name: Configuramos firewall para acceder a servicios de Kubernetes
+    firewalld:
+      permanent: yes
+      immediate: yes
+      state: enabled
+      port: "{{item}}"
+      
+    with_items:
+      - '30000-32767/tcp'
+      - '10250/tcp'
+       
+  - name: Copiar el comando join al destino de servidor
+    copy: src=join-token dest=/tmp/join-token.sh mode=0777
+
+  - name: Union de los Workers
+    command: sh /tmp/join-token.sh

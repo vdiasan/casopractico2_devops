@@ -1,4 +1,4 @@
-# Fichero de Inventario en Ansible
+# Fichero de Inventario en Ansible para despliegue de clúster kubernetes formado por cuatro servidores: master, workers01 y 02 y nfs.
 
 # Servidor con rol de master en Kubernetes
 [master]
@@ -16,8 +16,13 @@ worker01.example.com
 [worker02]
 worker02.example.com
 
-# Kubernetes Children
+# Kubernetes Children Master-Workers
 [kubernetes:children]
 master
+worker01
+worker02
+
+# Kubernetes Children-Workers
+[workers:children]
 worker01
 worker02

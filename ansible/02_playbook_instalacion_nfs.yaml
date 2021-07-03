@@ -1,49 +1,8 @@
 ---
-# Playbook de instalación NFS
+# Playbook de instalación y configuración de servidor NFS.
 
 - hosts: nfs
   become: yes 
-
-  tasks:
-  - name: Creando directorio para NFS
-    file:
-      path: /src/nfs
-      state: directory
-      owner: ansible
-      group: ansible
-      mode: 0777
-
-  - name: Instalando paquetes para NFS 
-    dnf:
-      name:
-        - net-tools
-        - nfs-utils
-      state: latest
-
-  - name: Arrancar y habilitar servicio NFS
-    systemd: 
-      name: nfs-server
-      state: started
-      daemon_reload: yes
-      enabled: yes
-
-  - name: Añadir líneas al archivo export
-    lineinfile:
-      path: /etc/exports
-      state: present
-      line: "{{ item }}"
-    with_items:
-    - '/srv/nfs  192.168.1.102(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
-    - '/srv/nfs  192.168.1.108(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
-    - '/srv/nfs  192.168.1.109(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
-    
-  - name: Añadir los puertos correspondientes en Firewalld
-    firewalld:
-        service: "{{ item }}"
-        state: enabled
-        permanent: yes
-        immediate: yes
-    with_items: 
-      - "nfs"
-      - "rpc-bind"
-      - "mountd"
+  roles: 
+    - 02_rol_instalacion_nfs
+ 

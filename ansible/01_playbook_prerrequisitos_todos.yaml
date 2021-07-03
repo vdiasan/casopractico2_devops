@@ -1,48 +1,9 @@
 ---
-# Playbook de Prerrequisitos
+# Playbook de Prerrequisitos. Aplica a todos los servidores del clúster de Kubernetes.
 
 - hosts: all
   become: yes
+  roles:
+    - 01_rol_prerrequisitos
 
-  tasks:
-  - name: Instalar el demonio chrony en CentOS.
-    package:
-      name: 
-       - chrony
-      state: latest
-  
-  - name: Arrancar y habilitar el servicio chronyd
-    systemd: 
-      name: chronyd
-      state: started
-      daemon_reload: yes
-      enabled: yes
-      
-  - name: Seleccionar la zona horaria Europe/Madrid
-    timezone:
-      name: Europe/Madrid
-  
-  - name: Habilitar el servicio ntp
-    command: /usr/bin/timedatectl set-ntp true
-
-  - name: Deshabilitar SELinux
-    selinux:
-      state: disabled
-
-  - name: Actualizar paquetes 
-    dnf:
-      name: "*"
-      state: latest
-
-  - name: Instalación de paquetes para el rol de NFS
-    dnf:
-      name:
-        - nfs-utils
-        - nfs4-acl-tools
-        - wget
-      state: latest
-
-  - name: Reiniciar todas las máquinas virtuales para aplicar la nueva configuración de SELinux
-    reboot:
-      reboot_timeout: 3
  

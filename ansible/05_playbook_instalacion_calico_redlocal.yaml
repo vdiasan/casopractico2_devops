@@ -1,0 +1,8 @@
+---
+
+# Playbook para la instalación de la red local Calico. 
+
+- hosts: master
+  become: yes
+  roles:
+    - 05_rol_calico_redlocal

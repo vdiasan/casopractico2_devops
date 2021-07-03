@@ -1,0 +1,25 @@
+---
+
+# Rol de instalación de red local Calico. Aplica a servidor master. 
+
+  - name: Copiar Tigera 
+    copy: 
+      src: ./archivos_extra/tigera-operator.yaml
+      dest: /tmp/
+      owner: ansible
+      group: ansible
+      mode: '0644'
+  
+  - name: Copiar Calico
+    copy: 
+      src: ./archivos_extra/custom-resources.yaml
+      dest: /tmp/
+      owner: ansible
+      group: ansible
+      mode: '0644'
+  
+  - name: Instalacion operador de Tigera
+    command: kubectl create -f /tmp/tigera-operator.yaml
+
+  - name: Instalacion de Calico
+    command: kubectl apply -f /tmp/custom-resources.yaml
