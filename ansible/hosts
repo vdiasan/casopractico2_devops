@@ -1,20 +1,25 @@
-# Fichero de Inventario en Ansible para despliegue de clúster kubernetes formado por cuatro servidores: master, workers01 y 02 y nfs.
+# Fichero de Inventario en Ansible para despliegue de clúster kubernetes en MS AZURE formado por cuatro servidores: master, workers01 y 02 y nfs. 
+# Es importante indicar que los nombres de las máquinas cambian de nuestro entorno local a nuestro entorno en MS AZURE. 
 
 # Servidor con rol de master en Kubernetes
 [master]
-master.example.com
+# master.example.com # Entorno Local
+master.victor.com # Entorno MS AZURE
 
 # Servidor con rol de nfs en Kubernetes
 [nfs]
-nfs.example.com
+# nfs.example.com # Entorno Local
+nfs.victor.com # Entorno MS AZURE
 
 # Servidor con rol de worker01 en Kubernetes
 [worker01]
-worker01.example.com
+# worker01.example.com # Entorno Local
+worker01.victor.com # Entorno MS AZURE
 
 # Servidor con rol de worker02 en Kubernetes
 [worker02]
-worker02.example.com
+# worker02.example.com # Entorno Local
+worker02.victor.com # Entorno MS AZURE
 
 # Kubernetes Children Master-Workers
 [kubernetes:children]

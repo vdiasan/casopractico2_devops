@@ -8,6 +8,7 @@ resource "azurerm_linux_virtual_machine" "myVM3" {
     admin_username      = var.ssh_user
     network_interface_ids = [ azurerm_network_interface.myNic3.id ]
     disable_password_authentication = true
+    computer_name = "worker01.victor.com"    
 
     admin_ssh_key {
         username   = var.ssh_user

@@ -26,10 +26,14 @@
       immediate: yes
       state: enabled
     with_items:
-      - 'rule family=ipv4 source address=192.168.1.108/32 accept'
-      - 'rule family=ipv4 source address=192.168.1.109/32 accept'
-      #- 'rule family=ipv4 source address=10.0.1.11/32'
-      #- 'rule family=ipv4 source address=10.0.1.12/32'
+      
+      # Para Entorno Local.
+      #- 'rule family=ipv4 source address=192.168.1.108/32 accept'
+      #- 'rule family=ipv4 source address=192.168.1.109/32 accept'
+      
+      # Para Entorno AZURE.
+      - 'rule family=ipv4 source address=10.0.1.12/32 accept'
+      - 'rule family=ipv4 source address=10.0.1.13/32 accept'
       
   - name: Permitimos acceso de los contenedores a localhost
     firewalld:
@@ -38,8 +42,12 @@
       immediate: yes
       state: enabled
     with_items:
+
+      # Para Entorno Local.
+      #- 'rule family=ipv4 source address=172.17.0.0/16 accept'
+    
+      # Para Entorno AZURE. 
       - 'rule family=ipv4 source address=172.17.0.0/16 accept'
-      #- 'rule family=ipv4 source address=172.17.0.0/16'
 
   - name: Instalamos el plugin CNI de Kubernetes y red PODS
     command: kubeadm init --pod-network-cidr 192.169.0.0/16

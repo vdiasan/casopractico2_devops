@@ -1,12 +1,6 @@
 ---  
 # Rol de tareas comunes a aplicar en los servidores máster y workers.
   
-  - name: Activamos Firewall.
-    systemd:
-      name: firewalld 
-      state: started
-      enabled: yes
-  
   - name: Añadimos modprobe br_netfilter
     modprobe:
       name: br_netfilter
@@ -16,9 +10,8 @@
     firewalld: 
       masquerade: yes
       state: enabled
-      #permanent: yes
-      #inmediate: yes
-      
+      permanent: yes
+            
   - name: Configurar para que Kubernetes maneje tráfico con firewall.
     become: yes
     sysctl:
@@ -37,6 +30,29 @@
      regexp: '(^/.*swap*)'
      replace: '# \1'
 
+# Montar nfs en Entorno Local
+
+  #- name: Montar nfs
+  #  mount:
+  #    fstype: nfs
+  #    opts: defaults
+  #    dump: 0
+  #    passno: 0
+  #    state: mounted
+  #    src: "192.168.1.107:/srv/nfs"
+  #    path: "/srv/nfs"
+
+# Montar nfs en MS AZURE
+
+  - name: Montar nfs
+    mount:
+      fstype: nfs
+      opts: defaults
+      dump: 0
+      passno: 0
+      state: mounted
+      src: "10.0.1.11:/srv/nfs"
+      path: "/srv/nfs"
 
   - name: Eliminar repositorio 
     yum_repository: 
@@ -47,7 +63,7 @@
   - name: Instalación del servicio Docker. 
     command: dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
 
-  - name: Instalación de Docker-ce
+  - name: Instalación de Docker-ce # Con módulo dnf
     dnf:
       name: 
         - containerd.io
@@ -56,13 +72,13 @@
     
       state: latest
 
-  - name: Activamos servicio Docker.
+  - name: Activamos servicio Docker
     systemd:
       name: docker 
       state: started
       enabled: yes
 
-  - name: Creamos un archivo repositorio para Kubernetes.
+  - name: Creamos un archivo repositorio para Kubernetes
     file:
      path: /etc/yum.repos.d/kubernetes.repo
      state: touch
@@ -80,9 +96,9 @@
       gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
         https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
 
-  - name: Instalación de Kubernetes. 
+  - name: Instalación de Kubernetes. # Con shell
     shell: |
-     yum install kubelet kubeadm kubectl -y
+     dnf install kubelet kubeadm kubectl -y
 
   - name: Activamos servicio Kubernetes.
     systemd:

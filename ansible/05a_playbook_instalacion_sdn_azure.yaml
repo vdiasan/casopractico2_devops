@@ -1,0 +1,8 @@
+---
+
+# Playbook para la instalación de la red SDN en AZURE. 
+
+- hosts: master
+  become: yes
+  roles:
+    - 05a_rol_SDN_redazure

@@ -2,6 +2,15 @@
 
 # Rol despliegue de aplicacion en Kubernetes. 
   
-  - name: Despliegue de Aplicacion
-    
-  - name: xxxxxxxxxxxxx  
+  - name: Copiar archivo aplicacion_nginx_redis.yaml 
+    copy: 
+      src: ./archivos_extra/aplicacion_nginx_redis.yaml
+      dest: /tmp/
+      owner: victor
+      group: victor
+      mode: '0644'
+  
+  - name: Instalacion Aplicacion 
+    command: kubectl apply -f /tmp/aplicacion_nginx_redis.yaml
+
+  

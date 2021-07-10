@@ -2,7 +2,7 @@
 
 # Playbook para la instalación de aplicación en Kubernetes. 
 
-- hosts: xxxxxx
+- hosts: master
   become: yes
   roles:
     - 09_rol_despliegue_aplicacion

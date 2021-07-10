@@ -1,15 +1,15 @@
 --- 
 
-# Rol de NFS. Aplica solo al servidor de NFS. 
+# Rol de NFS. Aplica solo al servidor de NFS.
 
   - name: Creando directorio para NFS
     file:
-      path: /src/nfs
+      path: /srv/nfs
       state: directory
-      owner: ansible
-      group: ansible
+      owner: victor
+      group: victor
       mode: 0777
-
+  
   - name: Instalando paquetes para NFS 
     dnf:
       name:
@@ -30,10 +30,24 @@
       state: present
       line: "{{ item }}"
     with_items:
-    - '/srv/nfs  192.168.1.102(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
-    - '/srv/nfs  192.168.1.108(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
-    - '/srv/nfs  192.168.1.109(sync,wdelay,hide,no_subtree_check,sec=sys,rw,secure,root_squash,no_all_squash)'
     
+    # IPs entorno local
+    #- '/srv/nfs  192.168.1.102(rw,sync)' # master
+    #- '/srv/nfs  192.168.1.108(rw,sync)' # worker01
+    #- '/srv/nfs  192.168.1.109(rw,sync)' # worker02
+    
+    # IPs entorno AZURE
+
+    - '/srv/nfs  10.0.1.10(rw,sync)' # master
+    - '/srv/nfs  10.0.1.12(rw,sync)' # worker01
+    - '/srv/nfs  10.0.1.13(rw,sync)' # worker02
+
+  - name: Ejecutar exportfs -r
+    command: exportfs -r
+  
+  - name: execute exportfs -s
+    command: exportfs -s
+
   - name: Añadir los puertos correspondientes en Firewalld
     firewalld:
         service: "{{ item }}"

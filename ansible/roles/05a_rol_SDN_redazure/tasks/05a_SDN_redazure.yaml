@@ -1,0 +1,25 @@
+---
+
+# Rol de instalación de red local en AZURE. Aplica a servidor master. 
+
+  - name: Permitimos puertos SDN AZURE
+    firewalld:
+      permanent: yes
+      immediate: yes
+      port: "{{item.port}}/{{item.proto}}"
+      state: "{{item.state}}"
+            
+    with_items:
+      - {port: "8285", proto: "udp", state: "enabled"}
+      - {port: "8472", proto: "udp", state: "enabled"}
+  
+  - name: Copiar archivos SDN AZURE 
+    copy: 
+      src: ./archivos_extra/canal.yaml
+      dest: /tmp/
+      owner: victor
+      group: victor
+      mode: '0644'
+  
+  - name: Instalacion de SDN AZURE
+    command: kubectl apply -f /tmp/canal.yaml

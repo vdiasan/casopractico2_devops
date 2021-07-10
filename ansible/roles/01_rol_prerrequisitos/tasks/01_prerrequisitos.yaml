@@ -1,7 +1,23 @@
 ---
-# Rol de Prerrequisitos. Aplica a Master, Worker01, Worker02 y nfs.
+# Rol de Prerrequisitos. Aplica a Master, Worker01, Worker02 y Nfs.
 
-  - name: Instalar el demonio chrony en CentOS.
+  # En entorno local he introducido los parámetros de /etc/hosts de forma manual.
+
+  # En entorno MS AZURE introduzco estos parámetros de forma automática a través de Ansible.
+  
+  - name: Añadir los equipos a fichero /etc/hosts
+    lineinfile: 
+      path: /etc/hosts
+      state: present
+      line: "{{ item }}"
+    with_items:
+    - '10.0.1.10 master.victor.com'
+    - '10.0.1.11 nfs.victor.com'
+    - '10.0.1.12 worker01.victor.com'
+    - '10.0.1.13 worker02.victor.com'
+  
+  
+  - name: Instalar el demonio chrony en CentOS
     package:
       name: 
        - chrony
@@ -25,6 +41,12 @@
     selinux:
       state: disabled
 
+  - name: Activar Firewall
+    systemd:
+      name: firewalld 
+      state: started
+      enabled: yes
+
   - name: Actualizar paquetes 
     dnf:
       name: "*"
@@ -40,4 +62,4 @@
 
   - name: Reiniciar todas las máquinas virtuales para aplicar la nueva configuración de SELinux
     reboot:
-      reboot_timeout: 3
+      reboot_timeout: 5

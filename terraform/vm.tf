@@ -8,6 +8,7 @@ resource "azurerm_linux_virtual_machine" "myVM1" {
     admin_username      = var.ssh_user
     network_interface_ids = [ azurerm_network_interface.myNic1.id ]
     disable_password_authentication = true
+    computer_name = "master.victor.com"     
 
     admin_ssh_key {
         username   = var.ssh_user
@@ -18,7 +19,7 @@ resource "azurerm_linux_virtual_machine" "myVM1" {
         caching              = "ReadWrite"
         storage_account_type = "Standard_LRS"
     }
-    
+
     plan {
         name      = "centos-8-stream-free"
         product   = "centos-8-stream-free"

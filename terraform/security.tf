@@ -1,4 +1,4 @@
-# Creamos un security group (regla de firewall) para habilitar el puerto 22 (ssh) en cada una de las 4 máquinas virtuales.
+# Creamos un security group (regla de firewall) para habilitar el puerto 22 (ssh) en cada una de las 4 máquinas virtuales y el puerto 80 (http) en la máquina virtual máster.
 
 resource "azurerm_network_security_group" "mySecGroup" {
     name                = "sshtraffic"
