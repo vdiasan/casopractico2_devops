@@ -74,9 +74,9 @@ NOTA: terraform destroy sirve para eliminar todo el entorno desplegado en MS AZU
 El despliegue de nuestro clúster de Kubernetes en MS AZURE de forma automatizada a través de Ansible se dividirá en dos fases distintas:
 
 ```
-**1.-Despliegue de clúster Kubernetes con Ansible en Entorno Local.**
+1.-Despliegue de clúster Kubernetes con Ansible en Entorno Local.
 
-**2.-Despliegue de clúster Kubernetes con Ansible en MS AZURE.** 
+2.-Despliegue de clúster Kubernetes con Ansible en MS AZURE. 
 ```
 
 
@@ -204,33 +204,31 @@ La aplicación a desplegar dentro de nuestro clúster de Kubernetes será:
 ```
 - nginx # Servidor web
 - redis # Base de datos clave/valor
+```
 
 3.1.-Fichero .yaml con Aplicación nginx y redis
 
-```
+
 - aplicacion_nginx_redis.yaml # Con dos contenedores para albergar ambas aplicaciones
-```
+
 
 3.2.-Rol de Ansible Aplicación nginx y redis
 
-```
+
 - 09_rol_despliegue_aplicacion # Con la ejecución del comando kubectl apply -f aplicacion_nginx_redis.yaml
 
-```
 
 3.3.-Playbook de Ansible Aplicación nginx y redis
 
-```
+
 - 09_playbook_aplicacion_kubernetes.yaml
 
-```
 
 Por último, podremos comprobar el correcto despliegue de nuestra aplicación a través de los comandos de Kubernetes: 
 
-```
+
 - kubectl get pods -A # Veremos los dos contenedores desplegados correctamente.
 - kubectl get pod mi-app # Veremos todos los pasos describiendo de forma detallada la instalación de nuestra aplicación. 
-```
 
 
 
